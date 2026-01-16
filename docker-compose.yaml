@@ -11,6 +11,7 @@ x-common-service: &common-service
       soft: 65535
       hard: 65535
   networks:
+    - dokploy-network
     - backend
   extra_hosts:
     - "host.docker.internal:host-gateway"
@@ -70,6 +71,7 @@ services:
       # Configure maximum concurrent pages for Playwright browser instances
       MAX_CONCURRENT_PAGES: ${CRAWL_CONCURRENT_REQUESTS:-10}
     networks:
+      - dokploy-network
       - backend
     # Resource limits for Docker Compose (not Swarm)
     cpus: 2.0
@@ -118,6 +120,7 @@ services:
     # image: valkey/valkey:alpine
 
     networks:
+      - dokploy-network
       - backend
     command: redis-server --bind 0.0.0.0
     logging:
@@ -130,6 +133,7 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     networks:
+      - dokploy-network
       - backend
     command: rabbitmq-server
     healthcheck:
@@ -152,6 +156,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: ${POSTGRES_DB:-postgres}
     networks:
+      - dokploy-network
       - backend
     logging:
       driver: "json-file"
@@ -163,3 +168,5 @@ services:
 networks:
   backend:
     driver: bridge
+  dokploy-network:
+    external: true  # 声明这是 Dokploy 创建的外部网络
